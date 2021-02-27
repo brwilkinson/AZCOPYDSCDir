@@ -1,8 +1,10 @@
-# WVDDSC
+# AZCOPYDSC
 
-PowerShell Web Access DSC __Class based Resource__
+PowerShell AZCOPY DSC __Class based Resource__
 
-This is a DSC Resource for configuring Windows Virtual Destkop Host Pool (WVD)
+This is a DSC Resource for performing File sync tasks with Azure File Shares
+
+[azcopy sync /?](https://docs.microsoft.com/en-us/azure/storage/common/storage-ref-azcopy-sync)
 
 __Requirements__
 * PowerShell Version 5.0 +
