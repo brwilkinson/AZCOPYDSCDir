@@ -13,26 +13,17 @@ __Requirements__
 ```powershell
     # sample configuation data
 
-            DirectoryPresentSource      = @(
-                @{
-                    filesSourcePath      = '\\{0}.file.core.windows.net\source\WVD\'
-                    filesDestinationPath = 'F:\Source\WVD\'
-                    MatchSource          = $true
-                }
-            )
+            # Blob copy with Managed Identity - Oauth2
+            AZCOPYDSCDirPresentSource   = @(
 
-            SoftwarePackagePresent      = @(
                 @{
-                    Name      = 'Remote Desktop Agent Boot Loader'
-                    Path      = 'F:\Source\WVD\Microsoft.RDInfra.RDAgentBootLoader.Installer-x64.msi'
-                    ProductId = '{41439A3F-FED7-478A-A71B-8E15AF8A6607}'
-                    Arguments = '/log "F:\Source\WVD\AgentBootLoaderInstall.txt"'
-                }
+                    SourcePath      = 'https://{0}.blob.core.windows.net/PSModules/'
+                    DestinationPath = 'F:\Source\PSModules\'
+                },
 
-            WVDInstall                  = @(
                 @{
-                    PoolNameSuffix = 'hp01'
-                    PackagePath    = 'F:\Source\WVD\Microsoft.RDInfra.RDAgent.Installer-x64-1.0.2548.6500.msi'
+                    SourcePath      = 'https://{0}.blob.core.windows.net/Tools/'
+                    DestinationPath = 'F:\Source\Tools\'
                 }
             )
 ```
@@ -40,53 +31,31 @@ __Requirements__
 
 ```powershell
 
-    $StringFilter = '\W', ''
-    #-------------------------------------------------------------------     
-    foreach ($File in $Node.DirectoryPresentSource)
-    {
-        $Name = ($File.filesSourcePath -f $StorageAccountName + $File.filesDestinationPath) -replace $StringFilter 
-        File $Name
-        {
-            SourcePath      = ($File.filesSourcePath -f $StorageAccountName)
-            DestinationPath = $File.filesDestinationPath
-            Ensure          = 'Present'
-            Recurse         = $true
-            Credential      = $StorageCred
-            MatchSource     = IIF $File.MatchSource $File.MatchSource $False   
-        }
-        $dependsonDirectory += @("[File]$Name")
-    }
 
-   #-------------------------------------------------------------------
-    # install any packages without dependencies
-    foreach ($Package in $Node.SoftwarePackagePresent)
-    {
-        $Name = $Package.Name -replace $StringFilter
-        xPackage $Name
-        {
-            Name                 = $Package.Name
-            Path                 = $Package.Path
-            Ensure               = 'Present'
-            ProductId            = $Package.ProductId
-            PsDscRunAsCredential = $credlookup['DomainCreds']
-            DependsOn            = $dependsonDirectory
-            Arguments            = $Package.Arguments
-        }
+Configuration AppServers
+{
+    Param (
+        [String]$StorageAccountId,
+        [String]$clientIDGlobal
+    )
 
-        $dependsonPackage += @("[xPackage]$($Name)")
-    }
-
-   #-------------------------------------------------------------------
-    # install WVD package
-    if ($Node.WVDInstall)
+    node $AllNodes.NodeName
     {
-        WVDDSC RDInfraAgent
+        $StringFilter = '\W', ''
+        #-------------------------------------------------------------------     
+        foreach ($AZCOPYDSCDir in $Node.AZCOPYDSCDirPresentSource)
         {
-            PoolNameSuffix          = $Node.WVDInstall.PoolNameSuffix
-            PackagePath             = $Node.WVDInstall.PackagePath
-            ManagedIdentityClientID = $AppInfo.ClientID
+            $Name = ($AZCOPYDSCDir.SourcePath -f $StorageAccountName + $AZCOPYDSCDir.DestinationPath) -replace $StringFilter 
+            AZCOPYDSCDir $Name
+            {
+                SourcePath              = ($AZCOPYDSCDir.filesSourcePath -f $StorageAccountName)
+                DestinationPath         = $AZCOPYDSCDir.filesDestinationPath
+                Ensure                  = 'Present'
+                ManagedIdentityClientID = $clientIDGlobal
+                LogDir                  = 'F:\azcopy_logs'
+            }
+            $dependsonDirectory += @("[AZCOPYDSCDir]$Name")
         }
-    }
 ```
 
 Full sample available here

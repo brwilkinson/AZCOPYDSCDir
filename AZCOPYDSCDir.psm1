@@ -71,20 +71,14 @@ class AZCOPYDSCDir
 
         # Read source information via list command  
         & $azcopy login --identity --identity-client-id $this.ManagedIdentityClientID
-        $Files = & $azcopy list $this.SourcePath
+        $Files = & $azcopy list $this.SourcePath --machine-readable
 
         $Source = $Files | ForEach-Object {
             
-            $null = $_ -match '(?<pre>; Content Length:) (?<length>.+) (?<unit>.+)'
+            $null = $_ -match '(?<pre>; Content Length:) (?<length>.+)'
             if ($matches)
             {
-                switch ($matches.unit)
-                {
-                    'KiB' { Write-Output (1KB * $matches.length ) }
-                    'MiB' { Write-Output (1MB * $matches.length ) }
-                    'GiB' { Write-Output (1GB * $matches.length ) }
-                    'B' { Write-Output (1 * $matches.length) }
-                }
+                $matches.length
                 $matches.Clear()
             }
         } | Measure-Object -Sum
@@ -97,12 +91,12 @@ class AZCOPYDSCDir
         [long]$DestinationFilesCount = $DestinationFiles | ForEach-Object Count
         [long]$DestinationFilesBytes = $DestinationFiles | ForEach-Object Sum
 
-        Write-Verbose -Message "Source has:      $($SourceFilesBytes) Bytes files"
-        Write-Verbose -Message "Destination has: $($DestinationFilesBytes) Bytes files"
-        Write-Verbose -Message "Source has:      $($SourceFilesCount) files"
-        Write-Verbose -Message "Destination has: $($DestinationFilesCount) files"
+        Write-Verbose -Message "Source has ------> [$($SourceFilesBytes)] Bytes files"
+        Write-Verbose -Message "Destination has -> [$($DestinationFilesBytes)] Bytes files"
+        Write-Verbose -Message "Source has ------> [$($SourceFilesCount)] files"
+        Write-Verbose -Message "Destination has -> [$($DestinationFilesCount)] files"
         
-        return ($SourceFilesCount -le $DestinationFilesCount -and $SourceFilesBytes -le $DestinationFilesBytes)
+        return ($SourceFilesCount -le $DestinationFilesCount -and ($SourceFilesBytes) -le ($DestinationFilesBytes))
     } 
 
     # Sets the desired state of the resource.
