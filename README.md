@@ -35,7 +35,7 @@ __Requirements__
 Configuration AppServers
 {
     Param (
-        [String]$StorageAccountId,
+        [String]$StorageAccountName,
         [String]$clientIDGlobal
     )
 
