@@ -17,13 +17,13 @@ __Requirements__
             AZCOPYDSCDirPresentSource   = @(
 
                 @{
-                    SourcePath      = 'https://{0}.blob.core.windows.net/PSModules/'
-                    DestinationPath = 'F:\Source\PSModules\'
+                    SourcePathBlobURI = 'https://{0}.blob.core.windows.net/source/PSModules/'
+                    DestinationPath   = 'F:\Source\PSModules\'
                 },
 
                 @{
-                    SourcePath      = 'https://{0}.blob.core.windows.net/Tools/'
-                    DestinationPath = 'F:\Source\Tools\'
+                    SourcePathBlobURI = 'https://{0}.blob.core.windows.net/source/Tools/'
+                    DestinationPath   = 'F:\Source\Tools\'
                 }
             )
 ```
@@ -61,6 +61,6 @@ Configuration AppServers
 Full sample available here
 
 - DSC Configuration
-    - [ADF/ext-DSC/DSC-WVDServers.ps1](https://github.com/brwilkinson/AzureDeploymentFramework/blob/65fc52c88806f495651d14ee67136967af354982/ADF/ext-DSC/DSC-WVDServers.ps1)
+    - [ADF/ext-DSC/DSC-AppServers.ps1](https://github.com/brwilkinson/AzureDeploymentFramework/blob/main/ADF/ext-DSC/DSC-AppServers.ps1#L394)
 - DSC ConfigurationData
-    - [ADF/ext-CD/WVD-ConfigurationData.psd1](https://github.com/brwilkinson/AzureDeploymentFramework/blob/65fc52c88806f495651d14ee67136967af354982/ADF/ext-CD/WVD-ConfigurationData.psd1)
+    - [ADF/ext-CD/JMP-ConfigurationData.psd1](https://github.com/brwilkinson/AzureDeploymentFramework/blob/main/ADF/ext-CD/JMP-ConfigurationData.psd1#L105)
