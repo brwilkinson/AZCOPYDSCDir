@@ -38,6 +38,8 @@ class AZCOPYDSCDir
     [Ensure]$Ensure = [Ensure]::Present
 
     # Tests if the resource is in the desired state.
+    # maybe able to enhance the performance if azcopy sync had a log only option
+    # https://github.com/Azure/azure-storage-azcopy/issues/1354
     [bool] Test()
     {
         # echo azcopy path
