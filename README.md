@@ -64,3 +64,17 @@ Full sample available here
     - [ADF/ext-DSC/DSC-AppServers.ps1](https://github.com/brwilkinson/AzureDeploymentFramework/blob/main/ADF/ext-DSC/DSC-AppServers.ps1#L394)
 - DSC ConfigurationData
     - [ADF/ext-CD/JMP-ConfigurationData.psd1](https://github.com/brwilkinson/AzureDeploymentFramework/blob/main/ADF/ext-CD/JMP-ConfigurationData.psd1#L105)
+
+## Invoke the resource directly to sync the files
+
+```powershell
+$ht = @{
+    SourcePath              = 'https://storage01.blob.core.windows.net/source/PSModules/'
+    DestinationPath         = 'F:\Source\PSModules\'
+    Ensure                  = 'Present'
+    ManagedIdentityClientID = '219fa169-9031-49cc-b4cb-1850bc5bf6b4'
+    LogDir                  = 'F:\azcopy_logs'
+}
+
+Invoke-DscResource -Name AZCOPYDSCDir -Method Set -ModuleName AZCOPYDSCDir -Property $ht -Verbose
+```
